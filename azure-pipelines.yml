@@ -35,8 +35,9 @@ stages:
             inputs:
               command: 'test'
               projects: 'core/getting-started/unit-testing-using-dotnet-test/PrimeService.Tests/PrimeService.Tests.csproj'
-              arguments: '--no-restore --no-build --collect "Code coverage"'
+              arguments: '--no-restore --no-build --collect "Code coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
               publishTestResults: true    # Publishes test results back to Azure Devops
+
           # - task: PublishTestResults@2
           #   displayName: Publish Test Results
           #   inputs:
