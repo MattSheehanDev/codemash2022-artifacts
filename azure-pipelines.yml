@@ -25,6 +25,7 @@ stages:
               projects: |
                 csharp/unit-testing-code-coverage/Numbers/Numbers.csproj
                 csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj
+              arguments: '-o $($(Agent.TempDirectory)'
           - task: DotNetCoreCLI@2
             displayName: Test Numbers
             inputs:
