@@ -8,9 +8,9 @@ trigger:
 
 resources:
   repositories:
-    - repository: PrimeServices
+    - repository: PrimeServices   # Name used during the checkout step
       type: Github
-      endpoint: MattSheehanDev   # Service Connection name
+      endpoint: MattSheehanDev    # Service Connection name
       name: dotnet/samples
 
 pool:
@@ -31,6 +31,7 @@ pool:
 
 
 steps:
+- checkout: PrimeServices
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
