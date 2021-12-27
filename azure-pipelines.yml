@@ -8,14 +8,13 @@ trigger:
 
 resources:
   repositories:
-    - repository: PrimeService   # Name used during the checkout step
+    - repository: PrimeService       # Name used during the checkout step
       type: Github
-      endpoint: MattSheehanDev    # Service Connection name
+      endpoint: MattSheehanDev       # Service Connection name
       name: dotnet/samples
 
 pool:
   vmImage: windows-latest
-
 
 stages:
   - stage: BuildApp
@@ -36,24 +35,12 @@ stages:
             inputs:
               command: 'test'
               projects: 'core/getting-started/unit-testing-using-dotnet-test/PrimeService.Tests/PrimeService.Tests.csproj'
-              arguments: '--no-restore --no-build'
-              publishTestResults: true
+              arguments: '--no-restore --no-build --collect "Code coverage"'
+              publishTestResults: true    # Publishes test results back to Azure Devops
+          # - task: PublishTestResults@2
+          #   displayName: Publish Test Results
+          #   inputs:
+          #     testResultsFormat: 'VSTest'
+          #     testResultsFiles: '**/*.trx'
+          #     testRunTitle: PrimeService Unit Tests
 
-  # - stage: DeployToStaging
-  #   dependsOn: BuildApp
-  #   jobs:
-  #     - deployment: 
-
-  # - stage: DeployToProduction
-  #   dependsOn: BuildApp
-
-
-# steps:
-# - checkout: PrimeServices
-# - script: echo Hello, world!
-#   displayName: 'Run a one-line script'
-
-# - script: |
-#     echo Add other tasks to build, test, and deploy your project.
-#     echo See https://aka.ms/yaml
-#   displayName: 'Run a multi-line script'
