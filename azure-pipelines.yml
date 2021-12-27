@@ -35,8 +35,13 @@ stages:
             inputs:
               command: 'test'
               projects: 'csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj'
-              arguments: '--no-restore --no-build --collect:"XPlat Code Coverage"'
+              arguments: '--no-restore --no-build --collect:"XPlat Code Coverage" -o $(Agent.TempDirectory)'
               publishTestResults: true    # Publishes test results back to Azure Devops
+          - task: PublishCodeCoverageResults@1
+            displayName: Publish Code Coverage Results
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
 
           # - task: PublishTestResults@2
           #   displayName: Publish Test Results
