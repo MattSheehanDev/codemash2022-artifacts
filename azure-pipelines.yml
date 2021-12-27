@@ -6,8 +6,29 @@
 trigger:
 - master
 
+resources:
+  repositories:
+    - repository: PrimeServices
+      type: Github
+      endpoint: MattSheehanDev   # Service Connection name
+      name: dotnet/samples
+
 pool:
   vmImage: ubuntu-latest
+
+
+# stages:
+#   - stage: BuildApp
+#     displayName: Build App
+
+#   - stage: DeployToStaging
+#     dependsOn: BuildApp
+#     jobs:
+#       - deployment: 
+
+#   - stage: DeployToProduction
+#     dependsOn: BuildApp
+
 
 steps:
 - script: echo Hello, world!
