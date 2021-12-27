@@ -25,23 +25,22 @@ stages:
               projects: |
                 csharp/unit-testing-code-coverage/Numbers/Numbers.csproj
                 csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj
-              arguments: '-o $($(Agent.TempDirectory)'
           - task: DotNetCoreCLI@2
             displayName: Test Numbers
             inputs:
               command: 'test'
               projects: 'csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj'
-              arguments: '--no-restore --no-build --collect:"XPlat Code Coverage" -o $(Agent.TempDirectory)'
+              arguments: '--no-restore --no-build --collect:"XPlat Code Coverage"'
               publishTestResults: false    # If true, publishes test results back to Azure Devops (same as the PublishTestResults task below)
           - task: PublishTestResults@2
             displayName: Publish Test Results
             inputs:
               testResultsFormat: 'VSTest'
-              testResultsFiles: '$(Agent.TempDirectory)/**/*.trx'
+              testResultsFiles: '$(Build.SourcesDirectory)/**/*.trx'
               testRunTitle: Numbers Unit Tests
-            # This will run the ReportGenerator to convert the coverage xml to html
+            # This will run the ReportGenerator to convert the code coverage xml to html
           - task: PublishCodeCoverageResults@1
             displayName: Publish Code Coverage Results
             inputs:
               codeCoverageTool: Cobertura
-              summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+              summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
