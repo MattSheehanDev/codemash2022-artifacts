@@ -41,7 +41,7 @@ stages:
             displayName: Publish Code Coverage Results
             inputs:
               codeCoverageTool: Cobertura
-              summaryFileLocation: '$(Agent.BuildDirectory)/**/coverage.cobertura.xml'
+              summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
 
           # - task: PublishTestResults@2
           #   displayName: Publish Test Results
