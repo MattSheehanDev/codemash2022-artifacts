@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
@@ -36,17 +31,15 @@ stages:
               command: 'test'
               projects: 'csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj'
               arguments: '--no-restore --no-build --collect:"XPlat Code Coverage"'
-              publishTestResults: true    # Publishes test results back to Azure Devops
+              # publishTestResults: true    # Publishes test results back to Azure Devops (same as the PublishTestResults task below)
+          - task: PublishTestResults@2
+            displayName: Publish Test Results
+            inputs:
+              testResultsFormat: 'VSTest'
+              testResultsFiles: '$(Agent.TempDirectory)/**/*.trx'
+              testRunTitle: Numbers Unit Tests
           - task: PublishCodeCoverageResults@1
             displayName: Publish Code Coverage Results
             inputs:
               codeCoverageTool: Cobertura
               summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
-
-          # - task: PublishTestResults@2
-          #   displayName: Publish Test Results
-          #   inputs:
-          #     testResultsFormat: 'VSTest'
-          #     testResultsFiles: '**/*.trx'
-          #     testRunTitle: PrimeService Unit Tests
-
