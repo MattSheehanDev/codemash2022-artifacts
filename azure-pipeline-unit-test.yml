@@ -12,7 +12,7 @@ pool:
   vmImage: windows-latest
 
 stages:
-  - stage: BuildNumbersStage
+  - stage: TestNumbersStage
     displayName: Build Dotnet Sample (Numbers)
     jobs:
       - job: BuildNumbers
@@ -44,3 +44,42 @@ stages:
             inputs:
               codeCoverageTool: Cobertura
               summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+
+  - stage: BuildNumbersStage
+    displayName: Build Dotnet Sample (Numbers)
+    jobs:
+      - job: BuildNumbers
+        steps:
+          - checkout: DotnetSamples
+          - task: DotNetCoreCLI@2
+            displayName: Build Numbers
+            inputs:
+              command: 'build'
+              projects: 'csharp/unit-testing-code-coverage/Numbers/Numbers.csproj'
+              arguments: '-o $(Build.ArtifactStagingDirectory)'
+          - publish: '$(Build.ArtifactStagingDirectory)'
+            artifact: Numbers
+
+  - stage: Publish
+    displayName: Publish Dotnet Sample (Numbers) Nuget Package
+    dependsOn: BuildNumbersStage
+    jobs:
+      - job: PublishNumbers
+        steps:
+          - checkout: none
+          - download: current  # Download artifacts from the current pipeline run
+            artifact: Numbers
+          - task: DotNetCoreCLI@2
+            displayName: Publish Numbers Package
+            inputs:
+              command: 'push'
+              packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg'
+              nuGetFeedType: 'internal'
+              feedPublish: 'NumbersFeed'
+          - task: PublishSymbols@2
+            displayName: Publish Numbers Symbols
+            inputs:
+              symbolsFolder: '$(Agent.BuildDirectory)'
+              searchPattern: '**/bin/**/*.pdb'
+              symbolServerType: 'TeamServices'
+              
