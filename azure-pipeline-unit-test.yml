@@ -13,9 +13,9 @@ pool:
 
 stages:
   - stage: TestNumbersStage
-    displayName: Build Dotnet Sample (Numbers)
+    displayName: Test Dotnet Sample (Numbers)
     jobs:
-      - job: BuildNumbers
+      - job: TestNumbers
         steps:
           - checkout: DotnetSamples
           - task: DotNetCoreCLI@2
@@ -57,6 +57,14 @@ stages:
               command: 'build'
               projects: 'csharp/unit-testing-code-coverage/Numbers/Numbers.csproj'
               arguments: '-o $(Build.ArtifactStagingDirectory)'
+          - task: DotNetCoreCLI@2
+            displayName: Pack Numbers
+            inputs:
+              command: 'pack'
+              packagesToPack: 'csharp/unit-testing-code-coverage/Numbers/Numbers.csproj'
+              configurationToPack: 'Release'
+              packDirectory: '$(Build.ArtifactStagingDirectory)'
+              arguments: '--include-symbols'
           - publish: '$(Build.ArtifactStagingDirectory)'
             artifact: Numbers
 
