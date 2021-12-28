@@ -76,7 +76,7 @@ stages:
               command: 'push'
               packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg;!$(Agent.BuildDirectory)/**/*.symbols.nupkg'
               nuGetFeedType: 'internal'
-              feedPublish: 'TestFeed/TestFeed'
+              feedPublish: 'CodeMash/TestFeed'
               versioningScheme: off
               allowPackageConflicts: true
           # - task: PublishSymbols@2
