@@ -53,13 +53,22 @@ stages:
         steps:
           - checkout: DotnetSamples
           - task: DotNetCoreCLI@2
+            displayName: Build Numbers
+            inputs:
+              command: 'build'
+              projects: 'csharp/unit-testing-code-coverage/Numbers/Numbers.csproj'
+          - task: DotNetCoreCLI@2
             displayName: Pack Numbers
             inputs:
               command: 'pack'
               packagesToPack: 'csharp/unit-testing-code-coverage/Numbers/Numbers.csproj'
               configurationToPack: 'Release'
               packDirectory: '$(Build.ArtifactStagingDirectory)'
-              includeSymbols: true
+              arguments: '--no-restore --no-build'
+              versioningScheme: 'byPrereleaseNumber'
+              majorVersion: 1
+              minorVersion: 0
+              patchVersion: 0
           - publish: '$(Build.ArtifactStagingDirectory)'
             artifact: Numbers
 
@@ -76,14 +85,14 @@ stages:
             displayName: Publish Numbers Package
             inputs:
               command: 'push'
-              packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg;!$(Agent.BuildDirectory)/**/*.symbols.nupkg'
+              packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg'
               nuGetFeedType: 'internal'
               feedPublish: 'CodeMash/TestFeed'
-              arguments: '--skip-duplicate'
-          # - task: PublishSymbols@2
-          #   displayName: Publish Numbers Symbols
-          #   inputs:
-          #     symbolsFolder: '$(Agent.BuildDirectory)'
-          #     searchPattern: '**/bin/**/*.pdb'
-          #     symbolServerType: 'TeamServices'
+            # Azure DevOps as far as I know still does not support snupkg
+          - task: PublishSymbols@2
+            displayName: Publish Numbers Symbols
+            inputs:
+              symbolsFolder: '$(Agent.BuildDirectory)'
+              searchPattern: '**/bin/**/*.pdb'
+              symbolServerType: 'TeamServices'
               
