@@ -12,8 +12,8 @@ pool:
   vmImage: windows-latest
 
 stages:
-  - stage: BuildApp
-    displayName: Build App
+  - stage: BuildNumbersStage
+    displayName: Build Dotnet Sample (Numbers)
     jobs:
       - job: BuildNumbers
         steps:
