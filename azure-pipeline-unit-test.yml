@@ -1,5 +1,8 @@
 trigger:
-- master
+  branches:
+  - master
+  paths:
+  - azure-pipeline-unit-test.yml
 
 resources:
   repositories:
@@ -76,7 +79,7 @@ stages:
               packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg;!$(Agent.BuildDirectory)/**/*.symbols.nupkg'
               nuGetFeedType: 'internal'
               feedPublish: 'CodeMash/TestFeed'
-              allowPackageConflicts: true
+              arguments: '--skip-duplicate'
           # - task: PublishSymbols@2
           #   displayName: Publish Numbers Symbols
           #   inputs:
