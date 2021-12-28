@@ -50,14 +50,6 @@ stages:
         steps:
           - checkout: DotnetSamples
           - task: DotNetCoreCLI@2
-            displayName: Build Numbers
-            inputs:
-              command: 'restore'
-              projects: 'csharp/unit-testing-code-coverage/Numbers/Numbers.csproj'
-              arguments: '-o $(Build.ArtifactStagingDirectory)'
-              feedsToUse: 'select'
-              vstsFeed: 'TestFeed'
-          - task: DotNetCoreCLI@2
             displayName: Pack Numbers
             inputs:
               command: 'pack'
@@ -65,7 +57,6 @@ stages:
               configurationToPack: 'Release'
               packDirectory: '$(Build.ArtifactStagingDirectory)'
               includeSymbols: true
-              arguments: '--no-restore'
           - publish: '$(Build.ArtifactStagingDirectory)'
             artifact: Numbers
 
@@ -78,6 +69,7 @@ stages:
           - checkout: none
           - download: current  # Download artifacts from the current pipeline run
             artifact: Numbers
+          - task: NuGetAuthenticate@0
           - task: DotNetCoreCLI@2
             displayName: Publish Numbers Package
             inputs:
