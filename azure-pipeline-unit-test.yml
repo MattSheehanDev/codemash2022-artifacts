@@ -69,7 +69,6 @@ stages:
           - checkout: none
           - download: current  # Download artifacts from the current pipeline run
             artifact: Numbers
-          - task: NuGetAuthenticate@0
           - task: DotNetCoreCLI@2
             displayName: Publish Numbers Package
             inputs:
@@ -77,7 +76,6 @@ stages:
               packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg;!$(Agent.BuildDirectory)/**/*.symbols.nupkg'
               nuGetFeedType: 'internal'
               feedPublish: 'CodeMash/TestFeed'
-              versioningScheme: off
               allowPackageConflicts: true
           # - task: PublishSymbols@2
           #   displayName: Publish Numbers Symbols
