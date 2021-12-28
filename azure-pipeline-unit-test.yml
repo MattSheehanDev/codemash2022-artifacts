@@ -59,6 +59,7 @@ stages:
             inputs:
               command: 'build'
               projects: 'csharp/unit-testing-code-coverage/Numbers/Numbers.csproj'
+              arguments: '-o $(Build.ArtifactStagingDirectory)'
           - task: DotNetCoreCLI@2
             displayName: Pack Numbers
             inputs:

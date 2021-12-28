@@ -1,8 +1,11 @@
 trigger:
   branches:
-  - master
+    include:
+      - master
   paths:
-  - azure-pipeline-deploy.yml
+   include:
+     - azure-pipeline-unit-test.yml
+
 
 resources:
   repositories:
