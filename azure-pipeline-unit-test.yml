@@ -74,15 +74,15 @@ stages:
             displayName: Publish Numbers Package
             inputs:
               command: 'push'
-              packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg'
+              packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg;!$(Agent.BuildDirectory)/**/*.symbols.nupkg'
               nuGetFeedType: 'internal'
-              feedPublish: 'TestFeed'
+              feedPublish: 'TestFeed/TestFeed'
               versioningScheme: off
               allowPackageConflicts: true
-          - task: PublishSymbols@2
-            displayName: Publish Numbers Symbols
-            inputs:
-              symbolsFolder: '$(Agent.BuildDirectory)'
-              searchPattern: '**/bin/**/*.pdb'
-              symbolServerType: 'TeamServices'
+          # - task: PublishSymbols@2
+          #   displayName: Publish Numbers Symbols
+          #   inputs:
+          #     symbolsFolder: '$(Agent.BuildDirectory)'
+          #     searchPattern: '**/bin/**/*.pdb'
+          #     symbolServerType: 'TeamServices'
               
