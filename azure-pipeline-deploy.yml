@@ -4,8 +4,7 @@ trigger:
       - master
   paths:
    include:
-     - azure-pipeline-unit-test.yml
-
+     - azure-pipeline-deploy.yml
 
 resources:
   repositories:
@@ -27,24 +26,33 @@ stages:
           - task: DotNetCoreCLI@2
             displayName: Build dotnet-core-api
             inputs:
-              command: 'build'
+              command: 'publish'
               projects: 'TodoApi.csproj'
               arguments: '-o $(Build.ArtifactStagingDirectory)'
           - publish: '$(Build.ArtifactStagingDirectory)'
             artifact: api
 
-  # - stage: DeployApp
-  #   displayName: Deploy App
-  #   dependsOn: BuildApp
-  #   jobs:
-  #     - deployment: DeployApi
-  #       displayName: Deploy dotnet-core-api
-  #       environment: staging-api
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #             - download: current
+  - stage: DeployApp
+    displayName: Deploy App
+    dependsOn: BuildApp
+    jobs:
+      - deployment: DeployApi
+        displayName: Deploy dotnet-core-api
+        environment: staging-api
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - download: current
+                artifact: api
+              - task: AzureRmWebAppDeployment@4
+                inputs:
+                  ConnectionType: 'AzureRM'
+                  appType: 'webApp'
+                  WebAppName: 'api-app-east'
+                  ResourceGroupName: 'artifacts-rg'
+                  Package: '$(Agent.BuildDirectory)/**/*.zip'
+                  azureSubscription: CodeMash2022-sp
         
 
 

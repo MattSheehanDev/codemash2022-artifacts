@@ -10,7 +10,7 @@ resources:
   repositories:
     - repository: DotnetSamples       # Name used during the checkout step
       type: Github
-      endpoint: MattSheehanDev       # Service Connection name
+      endpoint: MattSheehanDev        # Service Connection name
       name: dotnet/samples
 
 pool:
@@ -73,7 +73,7 @@ stages:
               minorVersion: 0
               patchVersion: 0
           - publish: '$(Build.ArtifactStagingDirectory)'
-            artifact: Numbers
+            artifact: numbers
 
   - stage: Publish
     displayName: Publish Dotnet Sample (Numbers) Nuget Package
@@ -82,8 +82,10 @@ stages:
       - job: PublishNumbers
         steps:
           - checkout: none
-          - download: current  # Download artifacts from the current pipeline run
-            artifact: Numbers
+            # Download numbers artifact from the current pipeline run
+          - download: current
+            artifact: numbers
+            # Publish NuGet package
           - task: DotNetCoreCLI@2
             displayName: Publish Numbers Package
             inputs:
@@ -91,7 +93,8 @@ stages:
               packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg'
               nuGetFeedType: 'internal'
               feedPublish: 'CodeMash/TestFeed'
-            # Azure DevOps as far as I know still does not support snupkg
+            # Publish package symbols
+            # Azure DevOps, as far as I know, still does not support snupkg
           - task: PublishSymbols@2
             displayName: Publish Numbers Symbols
             inputs:
