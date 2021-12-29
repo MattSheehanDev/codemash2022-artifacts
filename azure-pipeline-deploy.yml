@@ -36,9 +36,11 @@ stages:
     displayName: Deploy App
     dependsOn: BuildApp
     jobs:
+        # deployment jobs are a special kind of job that can
+        # record deployment history and deployment strategy.
       - deployment: DeployApi
         displayName: Deploy dotnet-core-api
-        environment: staging-api
+        environment: dev-api
         strategy:
           runOnce:
             deploy:
