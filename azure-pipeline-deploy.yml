@@ -17,10 +17,10 @@ pool:
   vmImage: windows-latest
 
 stages:
-  - stage: BuildApp
-    displayName: Build App
+  - stage: PublishApp
+    displayName: Publish App
     jobs:
-      - job: BuildApi
+      - job: Publish
         steps:
           - checkout: dotnet-core-api
           - task: DotNetCoreCLI@2
@@ -32,15 +32,15 @@ stages:
           - publish: '$(Build.ArtifactStagingDirectory)'
             artifact: api
 
-  - stage: DeployApp
+  - stage: DeployAppServiceOne
     displayName: Deploy App
-    dependsOn: BuildApp
+    dependsOn: PublishApp
     jobs:
         # deployment jobs are a special kind of job that can
         # record deployment history and deployment strategy.
       - deployment: DeployApi
         displayName: Deploy dotnet-core-api
-        environment: dev-api
+        environment: env-one
         strategy:
           runOnce:
             deploy:
@@ -50,30 +50,31 @@ stages:
               - task: AzureRmWebAppDeployment@4
                 inputs:
                   ConnectionType: 'AzureRM'
-                  appType: 'webApp'
+                  WebAppKind: 'webApp'
                   WebAppName: 'api-app-east'
                   ResourceGroupName: 'artifacts-rg'
                   Package: '$(Agent.BuildDirectory)/**/*.zip'
-                  azureSubscription: CodeMash2022-sp
-        
+                  ConnectedServiceName: CodeMash2022-sp
 
+  - stage: DeployAppServiceTwo
+    displayName: Deploy App
+    dependsOn: PublishApp
+    jobs:
+      - deployment: DeployApi
+        displayName: Deploy dotnet-core-api
+        environment: env-two
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - download: current
+                artifact: api
+              - task: AzureRmWebAppDeployment@4
+                inputs:
+                  ConnectionType: 'AzureRM'
+                  WebAppKind: 'webApp'
+                  WebAppName: 'api-app-east2'
+                  ResourceGroupName: 'artifacts-rg'
+                  Package: '$(Agent.BuildDirectory)/**/*.zip'
+                  ConnectedServiceName: CodeMash2022-sp
 
-
-  # - stage: DeployToStaging
-  #   dependsOn: BuildApp
-  #   jobs:
-  #     - deployment: 
-
-  # - stage: DeployToProduction
-  #   dependsOn: BuildApp
-
-
-# steps:
-# - checkout: PrimeServices
-# - script: echo Hello, world!
-#   displayName: 'Run a one-line script'
-
-# - script: |
-#     echo Add other tasks to build, test, and deploy your project.
-#     echo See https://aka.ms/yaml
-#   displayName: 'Run a multi-line script'

@@ -34,7 +34,8 @@ stages:
               command: 'test'
               projects: 'csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj'
               arguments: '--no-restore --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory $(Agent.TempDirectory)'
-              publishTestResults: false    # If true, publishes test results back to Azure Devops (same as the PublishTestResults task below)
+              # If publishTestResults is true, test results are published back to Azure Devops (same as the PublishTestResults task below)
+              publishTestResults: false
           - task: PublishTestResults@2
             displayName: Publish Test Results
             inputs:
