@@ -33,7 +33,7 @@ stages:
               steps:
               - download: specific
                 artifact: api
-                project: CodeMash2022
+                project: CodeMash
                 pipeline: Deploy Pipeline One
                 preferTriggeringPipeline: true
                 runVersion: latest
