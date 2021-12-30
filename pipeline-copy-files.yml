@@ -29,6 +29,7 @@ stages:
         inputs:
           azureSubscription: CodeMash2022-sp
           azurePowerShellVersion: LatestVersion
+          ScriptType: InlineScript
           inline: 'mkdir build && cd build'
         
       - task: CMake@1
