@@ -25,11 +25,16 @@ stages:
       pool:
         vmImage: 'windows-latest'
       steps:
+      - checkout: CppExample
+      
       - task: AzurePowerShell@5
         inputs:
           azureSubscription: CodeMash2022-sp
           azurePowerShellVersion: LatestVersion
-          inline: 'mkdir build && cd build'
+          ScriptType: InlineScript
+          inline: |
+            mkdir build
+            cd build
         
       - task: CMake@1
         displayName: 'CMake ..'
