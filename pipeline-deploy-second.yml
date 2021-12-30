@@ -1,6 +1,8 @@
 trigger: none
 
 resources:
+  # All artifacts from pipeline resources are automatically downloaded
+  # and made available at the beginning of each deployment job
   pipelines:
     - pipeline: deployone             # This is a symbolic name, it can be anything
       source: Deploy Pipeline One     # Name of the pipeline as it appears in Azure DevOps
@@ -19,7 +21,7 @@ pool:
 
 stages:
   - stage: DeployAppServiceOne
-    displayName: Deploy App
+    displayName: Deploy App Env 1
     jobs:
         # deployment jobs are a special kind of job that can
         # record deployment history and deployment strategy.
@@ -30,13 +32,6 @@ stages:
           runOnce:
             deploy:
               steps:
-              # - task: DownloadPipelineArtifact@2
-              #   inputs:
-              #     buildType: specific
-              #     artifact: api
-              #     project: 'CodeMash'
-              #     definition: 'Deploy Pipeline One'
-              #     runVersion: 'latest'
               - task: AzureRmWebAppDeployment@4
                 inputs:
                   ConnectionType: 'AzureRM'
@@ -45,26 +40,23 @@ stages:
                   ResourceGroupName: 'artifacts-rg'
                   Package: '$(Agent.BuildDirectory)/**/*.zip'
                   ConnectedServiceName: CodeMash2022-sp
-
-  # - stage: DeployAppServiceTwo
-  #   displayName: Deploy App
-  #   dependsOn: PublishApp
-  #   jobs:
-  #     - deployment: DeployApi
-  #       displayName: Deploy dotnet-core-api
-  #       environment: env-two
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #             - download: current
-  #               artifact: api
-  #             - task: AzureRmWebAppDeployment@4
-  #               inputs:
-  #                 ConnectionType: 'AzureRM'
-  #                 WebAppKind: 'webApp'
-  #                 WebAppName: 'api-app-east2'
-  #                 ResourceGroupName: 'artifacts-rg'
-  #                 Package: '$(Agent.BuildDirectory)/**/*.zip'
-  #                 ConnectedServiceName: CodeMash2022-sp
+  - stage: DeployAppServiceTwo
+    displayName: Deploy App Env 2
+    dependsOn: PublishApp
+    jobs:
+      - deployment: DeployApi
+        displayName: Deploy dotnet-core-api
+        environment: env-two
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - task: AzureRmWebAppDeployment@4
+                inputs:
+                  ConnectionType: 'AzureRM'
+                  WebAppKind: 'webApp'
+                  WebAppName: 'api-app-east2'
+                  ResourceGroupName: 'artifacts-rg'
+                  Package: '$(Agent.BuildDirectory)/**/*.zip'
+                  ConnectedServiceName: CodeMash2022-sp
 
