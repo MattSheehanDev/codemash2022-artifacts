@@ -4,7 +4,10 @@ resources:
   pipelines:
     - pipeline: deployone             # This is a symbolic name, it can be anything
       source: Deploy Pipeline One     # Name of the pipeline as it appears in Azure DevOps
-      trigger: true
+      trigger:
+        branches:
+          include:
+            - master
   repositories:
     - repository: dotnet-core-api   # Name used during the checkout step
       type: Github
