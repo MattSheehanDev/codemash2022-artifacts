@@ -1,0 +1,73 @@
+trigger:
+  branches:
+    include:
+      - master
+  paths:
+   include:
+     - azure-pipeline-deploy.yml
+
+resources:
+  pipelines:
+    - pipeline: deployone             # This is a symbolic name, it can be anything
+      source: Deploy Pipeline One     # Name of the pipeline as it appears in Azure DevOps
+      trigger: true
+  repositories:
+    - repository: dotnet-core-api   # Name used during the checkout step
+      type: Github
+      endpoint: MattSheehanDev      # Service Connection name
+      name: Azure-Samples/dotnet-core-api
+
+pool:
+  vmImage: windows-latest
+
+stages:
+  - stage: DeployAppServiceOne
+    displayName: Deploy App
+    dependsOn: PublishApp
+    jobs:
+        # deployment jobs are a special kind of job that can
+        # record deployment history and deployment strategy.
+      - deployment: DeployApi
+        displayName: Deploy dotnet-core-api
+        environment: env-one
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - download: specific
+                artifact: api
+                project: CodeMash2022
+                pipeline: Deploy Pipeline One
+                preferTriggeringPipeline: true
+                runVersion: latest
+              - task: AzureRmWebAppDeployment@4
+                inputs:
+                  ConnectionType: 'AzureRM'
+                  WebAppKind: 'webApp'
+                  WebAppName: 'api-app-east'
+                  ResourceGroupName: 'artifacts-rg'
+                  Package: '$(Agent.BuildDirectory)/**/*.zip'
+                  ConnectedServiceName: CodeMash2022-sp
+
+  # - stage: DeployAppServiceTwo
+  #   displayName: Deploy App
+  #   dependsOn: PublishApp
+  #   jobs:
+  #     - deployment: DeployApi
+  #       displayName: Deploy dotnet-core-api
+  #       environment: env-two
+  #       strategy:
+  #         runOnce:
+  #           deploy:
+  #             steps:
+  #             - download: current
+  #               artifact: api
+  #             - task: AzureRmWebAppDeployment@4
+  #               inputs:
+  #                 ConnectionType: 'AzureRM'
+  #                 WebAppKind: 'webApp'
+  #                 WebAppName: 'api-app-east2'
+  #                 ResourceGroupName: 'artifacts-rg'
+  #                 Package: '$(Agent.BuildDirectory)/**/*.zip'
+  #                 ConnectedServiceName: CodeMash2022-sp
+

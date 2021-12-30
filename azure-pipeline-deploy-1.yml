@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+      - master
+  paths:
+   include:
+     - azure-pipeline-deploy-1.yml
+
+resources:
+  repositories:
+    - repository: dotnet-core-api   # Name used during the checkout step
+      type: Github
+      endpoint: MattSheehanDev      # Service Connection name
+      name: Azure-Samples/dotnet-core-api
+
+pool:
+  vmImage: windows-latest
+
+stages:
+  - stage: PublishApp
+    displayName: Publish App
+    jobs:
+      - job: Publish
+        steps:
+          - checkout: dotnet-core-api
+          - task: DotNetCoreCLI@2
+            displayName: Build dotnet-core-api
+            inputs:
+              command: 'publish'
+              projects: 'TodoApi.csproj'
+              arguments: '-o $(Build.ArtifactStagingDirectory)'
+          - publish: '$(Build.ArtifactStagingDirectory)'
+            artifact: api
