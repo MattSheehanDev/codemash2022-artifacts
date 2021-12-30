@@ -1,0 +1,78 @@
+trigger: none
+resources:
+  pipelines:
+  - pipeline: unittests            # This is a symbolic name, it can be anything
+    source: Unit Test Pipeline    # Name of the pipeline as it appears in Azure DevOps
+    trigger:
+      branches:
+        include:
+          - master
+      paths:
+        include:
+          - azure-pipeline-unit-test.yml
+
+resources:
+  repositories:
+    - repository: DotnetSamples       # Name used during the checkout step
+      type: Github
+      endpoint: MattSheehanDev        # Service Connection name
+      name: dotnet/samples
+
+pool:
+  vmImage: windows-latest
+
+stages:
+  - stage: BuildNumbersStage
+    displayName: Build Dotnet Sample (Numbers)
+    jobs:
+      - job: BuildNumbers
+        steps:
+          - checkout: DotnetSamples
+          - task: DotNetCoreCLI@2
+            displayName: Build Numbers
+            inputs:
+              command: 'build'
+              projects: 'csharp/unit-testing-code-coverage/Numbers/Numbers.csproj'
+              arguments: '-o $(Build.ArtifactStagingDirectory)'
+          - task: DotNetCoreCLI@2
+            displayName: Pack Numbers
+            inputs:
+              command: 'pack'
+              packagesToPack: 'csharp/unit-testing-code-coverage/Numbers/Numbers.csproj'
+              configurationToPack: 'Release'
+              packDirectory: '$(Build.ArtifactStagingDirectory)'
+              arguments: '--no-restore --no-build'
+              versioningScheme: 'byPrereleaseNumber'
+              majorVersion: 1
+              minorVersion: 0
+              patchVersion: 0
+          - publish: '$(Build.ArtifactStagingDirectory)'
+            artifact: numbers
+
+  - stage: Publish
+    displayName: Publish Dotnet Sample (Numbers) Nuget Package
+    dependsOn: BuildNumbersStage
+    jobs:
+      - job: PublishNumbers
+        steps:
+          - checkout: none
+            # Download numbers artifact from the current pipeline run
+          - download: current
+            artifact: numbers
+            # Publish NuGet package
+          - task: DotNetCoreCLI@2
+            displayName: Publish Numbers Package
+            inputs:
+              command: 'push'
+              packagesToPush: '$(Agent.BuildDirectory)/**/*.nupkg'
+              nuGetFeedType: 'internal'
+              feedPublish: 'CodeMash/TestFeed'
+            # Publish package symbols
+            # Azure DevOps, as far as I know, still does not support snupkg
+          - task: PublishSymbols@2
+            displayName: Publish Numbers Symbols
+            inputs:
+              symbolsFolder: '$(Agent.BuildDirectory)'
+              searchPattern: '**/bin/**/*.pdb'
+              symbolServerType: 'TeamServices'
+              
