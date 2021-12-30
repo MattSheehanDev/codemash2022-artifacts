@@ -11,7 +11,7 @@ resources:
     - repository: CppExample          # Name used during the checkout step
       type: Github
       endpoint: MattSheehanDev        # Service Connection name
-      name: ainfosec/ci_helloworld
+      name: memsharded/hello
 
 pool:
   # Equivalent of Windows Server 2019 with Visual Studio 2019
