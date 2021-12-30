@@ -50,7 +50,7 @@ stages:
         displayName: 'Copy CPack Files to: $(Build.ArtifactStagingDirectory)'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)'
-          Contents: '**/*.exe|**/*.lib'
+          Contents: '**'
           TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
       - task: PublishBuildArtifacts@1
