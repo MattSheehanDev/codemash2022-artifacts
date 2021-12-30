@@ -1,17 +1,8 @@
-trigger: none
 resources:
   pipelines:
-  - pipeline: unittests            # This is a symbolic name, it can be anything
-    source: Unit Test Pipeline    # Name of the pipeline as it appears in Azure DevOps
-    trigger:
-      branches:
-        include:
-          - master
-      paths:
-        include:
-          - azure-pipeline-unit-test.yml
-
-resources:
+    - pipeline: unittests             # This is a symbolic name, it can be anything
+      source: Unit Test Pipeline      # Name of the pipeline as it appears in Azure DevOps
+      trigger: true
   repositories:
     - repository: DotnetSamples       # Name used during the checkout step
       type: Github
