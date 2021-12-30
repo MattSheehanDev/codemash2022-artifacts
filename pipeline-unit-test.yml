@@ -4,7 +4,7 @@ trigger:
       - master
   paths:
     include:
-      - azure-pipeline-unit-test.yml
+      - pipeline-unit-test.yml
 
 resources:
   repositories:
@@ -14,6 +14,7 @@ resources:
       name: dotnet/samples
 
 pool:
+  # Equivalent of Windows Server 2019 with Visual Studio 2019
   vmImage: windows-latest
 
 stages:

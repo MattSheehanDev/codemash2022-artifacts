@@ -1,0 +1,46 @@
+trigger:
+  branches:
+    include:
+      - master
+  paths:
+    include:
+      - pipeline-copy-files.yml
+
+resources:
+  repositories:
+    - repository: CppExample          # Name used during the checkout step
+      type: Github
+      endpoint: MattSheehanDev        # Service Connection name
+      name: ainfosec/ci_helloworld
+
+pool:
+  # Equivalent of Windows Server 2019 with Visual Studio 2019
+  vmImage: windows-latest
+
+stages:
+  - stage: BuildCpp
+    displayName: Cpp Example
+    jobs:
+    - job: Windows
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+      - task: CMake@1
+        displayName: 'CMake ..'
+        inputs:
+          cmakeArgs: '..'
+
+      - task: CMake@1
+        displayName: 'CMake --build . --config Debug'
+        inputs:
+          cmakeArgs: '--build . --config Debug'
+
+      - task: CopyFiles@2
+        displayName: 'Copy CPack Files to: $(Build.ArtifactStagingDirectory)'
+        inputs:
+          SourceFolder: '$(Build.SourcesDirectory)/build'
+          Contents: '**/Debug/*.exe'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifact: drop'
