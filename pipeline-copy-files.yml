@@ -25,6 +25,8 @@ stages:
       pool:
         vmImage: 'windows-latest'
       steps:
+      - checkout: CppExample
+      
       - task: AzurePowerShell@5
         inputs:
           azureSubscription: CodeMash2022-sp
