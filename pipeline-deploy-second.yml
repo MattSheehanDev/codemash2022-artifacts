@@ -5,7 +5,7 @@ resources:
   # and made available at the beginning of each deployment job
   pipelines:
     - pipeline: deployone             # This is a symbolic name, it can be anything
-      source: Deploy Pipeline One     # Name of the pipeline as it appears in Azure DevOps
+      source: Deploy Pipeline (First)     # Name of the pipeline as it appears in Azure DevOps
       trigger:
         branches:
           include:
