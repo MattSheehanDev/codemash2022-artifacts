@@ -1,3 +1,5 @@
+trigger: none
+
 resources:
   pipelines:
     - pipeline: unittests             # This is a symbolic name, it can be anything
