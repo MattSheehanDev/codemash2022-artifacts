@@ -20,7 +20,6 @@ pool:
 stages:
   - stage: DeployAppServiceOne
     displayName: Deploy App
-    dependsOn: PublishApp
     jobs:
         # deployment jobs are a special kind of job that can
         # record deployment history and deployment strategy.
@@ -31,12 +30,13 @@ stages:
           runOnce:
             deploy:
               steps:
-              - download: specific
-                artifact: api
-                project: CodeMash
-                pipeline: Deploy Pipeline One
-                preferTriggeringPipeline: true
-                runVersion: latest
+              - task: DownloadPipelineArtifact@2
+                inputs:
+                  buildType: specific
+                  artifactName: api
+                  project: 'CodeMash'
+                  definition: 'Deploy Pipeline One'
+                  runVersion: 'latest'
               - task: AzureRmWebAppDeployment@4
                 inputs:
                   ConnectionType: 'AzureRM'
