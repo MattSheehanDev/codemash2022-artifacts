@@ -42,7 +42,6 @@ stages:
                   ConnectedServiceName: CodeMash2022-sp
   - stage: DeployAppServiceTwo
     displayName: Deploy App Env 2
-    dependsOn: PublishApp
     jobs:
       - deployment: DeployApi
         displayName: Deploy dotnet-core-api
