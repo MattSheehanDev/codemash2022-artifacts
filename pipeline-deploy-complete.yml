@@ -45,10 +45,10 @@ stages:
           runOnce:
             deploy:
               steps:
-              - task: DownloadPipelineArtifact@2
-                inputs:
-                  buildType: current
-                  artifact: api
+              # - task: DownloadPipelineArtifact@2
+              #   inputs:
+              #     buildType: current
+              #     artifact: api
               - task: AzureRmWebAppDeployment@4
                 inputs:
                   ConnectionType: 'AzureRM'
@@ -70,7 +70,9 @@ stages:
             deploy:
               steps:
                 # The download keywork is a shortcut for
-                # the task DownloadPipelineArtifact above.
+                # the task DownloadPipelineArtifact.
+                # It also overrides the default behavior of
+                # downloading all pipeline artifacts.
               - download: current
                 artifact: api
               - task: AzureRmWebAppDeployment@4
