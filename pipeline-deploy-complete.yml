@@ -45,10 +45,7 @@ stages:
           runOnce:
             deploy:
               steps:
-              # - task: DownloadPipelineArtifact@2
-              #   inputs:
-              #     buildType: current
-              #     artifact: api
+                # Deploy hooks download artifacts automatically
               - task: AzureRmWebAppDeployment@4
                 inputs:
                   ConnectionType: 'AzureRM'

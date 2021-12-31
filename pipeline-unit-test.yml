@@ -25,7 +25,7 @@ stages:
         steps:
           - checkout: DotnetSamples
           - task: DotNetCoreCLI@2
-            displayName: Build Numbers
+            displayName: Build Tests
             inputs:
               command: 'build'
               projects: 'csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj'
