@@ -39,8 +39,10 @@ stages:
               majorVersion: 1
               minorVersion: 0
               patchVersion: 0
-          - publish: '$(Build.ArtifactStagingDirectory)'
-            artifact: numbers
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: '$(Build.ArtifactStagingDirectory)'
+              artifactName: numbers
 
   - stage: Publish
     displayName: Publish Dotnet Sample (Numbers) Nuget Package

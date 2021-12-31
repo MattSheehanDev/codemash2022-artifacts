@@ -12,16 +12,12 @@ resources:
       type: Github
       endpoint: MattSheehanDev        # Service Connection name
       name: memsharded/hello
-
-pool:
-  # Equivalent of Windows Server 2019 with Visual Studio 2019
-  vmImage: windows-latest
-
+ 
 stages:
   - stage: BuildCpp
-    displayName: Cpp Example
+    displayName: Build Cpp Example
     jobs:
-    - job: Windows
+    - job: Build
       pool:
         vmImage: 'windows-latest'
       steps:
@@ -47,11 +43,11 @@ stages:
           cmakeArgs: '--build . --config Debug'
 
       - task: CopyFiles@2
-        displayName: 'Copy CPack Files to: $(Build.ArtifactStagingDirectory)'
+        displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)'
           Contents: '**/bin/*.exe'
           TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-      - task: PublishBuildArtifacts@1
-        displayName: 'Publish Artifact: drop'
+      - publish: '$(Build.ArtifactStagingDirectory)'
+        artifact: build
