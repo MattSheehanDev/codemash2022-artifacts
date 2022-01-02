@@ -32,4 +32,4 @@ stages:
             # The publish keyword is a shortcut for
             # the task PublishPipelineArtifact.
           - publish: '$(Build.ArtifactStagingDirectory)'
-            artifact: api
+
