@@ -8,7 +8,7 @@ trigger:
 
 resources:
   repositories:
-    - repository: dotnet-core-api   # Name used during the checkout step
+    - repository: nodejs-example    # Name used during the checkout step
       type: Github
       endpoint: MattSheehanDev      # Service Connection name
       name: gothinkster/node-express-realworld-example-app
@@ -20,10 +20,11 @@ pool:
   vmImage: windows-latest
 
 stages:
-  - stage: PublishApp
-    displayName: Publish App
+  - stage: Yarn
+    displayName: Yarn Install
     jobs:
-      - job: Publish
+      - job: Yarn
+        - checkout: nodejs-example
         - task: Cache@2
           inputs:
             key: '"yarn" | "$(Agent.OS)" | yarn.lock'
