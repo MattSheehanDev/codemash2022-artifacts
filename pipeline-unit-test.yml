@@ -34,18 +34,18 @@ stages:
             inputs:
               command: 'test'
               projects: 'csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj'
-              arguments: '--no-restore --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory $(Agent.TempDirectory)'
+              arguments: '--no-restore --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory $(Common.TestResultsDirectory)'
               # If publishTestResults is true, test results are published back to Azure Devops (same as the PublishTestResults task below)
               publishTestResults: false
           - task: PublishTestResults@2
             displayName: Publish Test Results
             inputs:
               testResultsFormat: 'VSTest'
-              testResultsFiles: '$(Agent.TempDirectory)/**/*.trx'
+              testResultsFiles: '$(Common.TestResultsDirectory)/**/*.trx'
               testRunTitle: Numbers Unit Tests
             # This will run the ReportGenerator to convert the code coverage xml to html
           - task: PublishCodeCoverageResults@1
             displayName: Publish Code Coverage Results
             inputs:
               codeCoverageTool: Cobertura
-              summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+              summaryFileLocation: '$(Common.TestResultsDirectory)/**/coverage.cobertura.xml'
