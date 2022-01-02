@@ -29,7 +29,7 @@ stages:
               command: 'publish'
               projects: 'TodoApi.csproj'
               arguments: '-o $(Build.ArtifactStagingDirectory)'
-            # The publish keywork is a shortcut for
+            # The publish keyword is a shortcut for
             # the task PublishPipelineArtifact.
           - publish: '$(Build.ArtifactStagingDirectory)'
             artifact: api

@@ -36,16 +36,17 @@ stages:
     displayName: Deploy App
     dependsOn: PublishApp
     jobs:
-        # deployment jobs are a special kind of job that can
+        # Deployment jobs are a special kind of job that can
         # record deployment history and deployment strategy.
+        # They do not automatically clone the source repo.
       - deployment: DeployApi
         displayName: Deploy dotnet-core-api
         environment: env-one
         strategy:
           runOnce:
+            # Deploy hooks download artifacts automatically
             deploy:
               steps:
-                # Deploy hooks download artifacts automatically
               - task: AzureRmWebAppDeployment@4
                 inputs:
                   ConnectionType: 'AzureRM'
