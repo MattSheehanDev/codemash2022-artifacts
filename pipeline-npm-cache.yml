@@ -1,0 +1,36 @@
+trigger:
+  branches:
+    include:
+      - master
+  paths:
+   include:
+     - pipeline-npm-cache.yml
+
+resources:
+  repositories:
+    - repository: dotnet-core-api   # Name used during the checkout step
+      type: Github
+      endpoint: MattSheehanDev      # Service Connection name
+      name: gothinkster/node-express-realworld-example-app
+
+variables:
+  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
+
+pool:
+  vmImage: windows-latest
+
+stages:
+  - stage: PublishApp
+    displayName: Publish App
+    jobs:
+      - job: Publish
+      - task: Cache@2
+        inputs:
+          key: '"yarn" | "$(Agent.OS)" | yarn.lock'
+          restoreKeys: |
+            yarn | "$(Agent.OS)"
+            yarn
+          path: $(YARN_CACHE_FOLDER)
+        displayName: Cache Yarn packages
+
+      - script: yarn --frozen-lockfile
