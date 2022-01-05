@@ -11,7 +11,7 @@ resources:
     - repository: dotnet-core-api   # Name used during the checkout step
       type: Github
       endpoint: MattSheehanDev      # Service Connection name
-      name: ACodeMazeBlog/unit-testing-aspnetcore-webapi
+      name: CodeMazeBlog/unit-testing-aspnetcore-webapi
 
 pool:
   vmImage: windows-latest
