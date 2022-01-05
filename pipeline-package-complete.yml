@@ -1,10 +1,12 @@
-trigger: none
+trigger:
+  branches:
+    include:
+      - master
+  paths:
+    include:
+      - pipeline-package-complete.yml
 
 resources:
-  pipelines:
-    - pipeline: unittests             # This is a symbolic name, it can be anything
-      source: Unit Test Pipeline      # Name of the pipeline as it appears in Azure DevOps
-      trigger: true
   repositories:
     - repository: DotnetSamples       # Name used during the checkout step
       type: Github
@@ -12,6 +14,7 @@ resources:
       name: dotnet/samples
 
 pool:
+  # Equivalent of Windows Server 2019 with Visual Studio 2019
   vmImage: windows-latest
 
 stages:
@@ -44,9 +47,41 @@ stages:
               targetPath: '$(Build.ArtifactStagingDirectory)'
               artifactName: numbers
 
+  - stage: TestNumbersStage
+    displayName: Test Dotnet Sample (Numbers)
+    jobs:
+      - job: TestNumbers
+        steps:
+          - checkout: DotnetSamples
+          - task: DotNetCoreCLI@2
+            displayName: Build Tests
+            inputs:
+              command: 'build'
+              projects: 'csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj'
+          - task: DotNetCoreCLI@2
+            displayName: Test Numbers
+            inputs:
+              command: 'test'
+              projects: 'csharp/unit-testing-code-coverage/XUnit.Coverlet.Collector/XUnit.Coverlet.Collector.csproj'
+              arguments: '--no-restore --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory $(Common.TestResultsDirectory)'
+              # If publishTestResults is true, test results are published back to Azure Devops (same as the PublishTestResults task below)
+              publishTestResults: false
+          - task: PublishTestResults@2
+            displayName: Publish Test Results
+            inputs:
+              testResultsFormat: 'VSTest'
+              testResultsFiles: '$(Common.TestResultsDirectory)/**/*.trx'
+              testRunTitle: Numbers Unit Tests
+            # This will run the ReportGenerator to convert the code coverage xml to html
+          - task: PublishCodeCoverageResults@1
+            displayName: Publish Code Coverage Results
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: '$(Common.TestResultsDirectory)/**/coverage.cobertura.xml'
+
   - stage: PublishPublicFeed
     displayName: Public Feed
-    dependsOn: BuildNumbersStage
+    dependsOn: TestNumbersStage
     jobs:
       - job: PublishNumbers
         steps:
@@ -73,7 +108,7 @@ stages:
               
   - stage: PublishPrivateFeed
     displayName: Private Feed
-    dependsOn: BuildNumbersStage
+    dependsOn: TestNumbersStage
     jobs:
       - job: PublishNumbers
         steps:
