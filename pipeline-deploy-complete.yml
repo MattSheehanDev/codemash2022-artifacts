@@ -39,7 +39,8 @@ stages:
 
   - stage: Test
     jobs:
-      - job: Unit Test
+      - job: UnitTest
+        displayName: Unit Test
         steps:
           - checkout: DotnetSamples
           - task: UseDotNet@2
@@ -76,7 +77,7 @@ stages:
 
   - stage: DeployAppServiceOne
     displayName: Deploy Environment 1
-    dependsOn: Build
+    dependsOn: Test
     jobs:
         # Deployment jobs are a special kind of job that can
         # record deployment history and deployment strategy.
@@ -100,7 +101,7 @@ stages:
 
   - stage: DeployAppServiceTwo
     displayName: Deploy Environment 2
-    dependsOn: Build
+    dependsOn: Test
     jobs:
       - deployment: DeployApi
         displayName: Deploy app service
