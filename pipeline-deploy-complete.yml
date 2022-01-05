@@ -33,7 +33,7 @@ stages:
 
   - stage: DeployAppServiceOne
     displayName: Deploy Environment 1
-    dependsOn: Publish
+    dependsOn: Build
     jobs:
         # Deployment jobs are a special kind of job that can
         # record deployment history and deployment strategy.
@@ -57,7 +57,7 @@ stages:
 
   - stage: DeployAppServiceTwo
     displayName: Deploy Environment 2
-    dependsOn: Publish
+    dependsOn: Build
     jobs:
       - deployment: DeployApi
         displayName: Deploy app service
