@@ -55,7 +55,7 @@ stages:
               projects: 'netcore-unit-testing/web-api/web-api/web-api.csproj'
               arguments: '-o $(Build.ArtifactStagingDirectory)'
           - publish: '$(Build.ArtifactStagingDirectory)'
-            artifact: api
+            artifact: api2
 
   - stage: Questions
     jobs:
@@ -75,7 +75,7 @@ stages:
               projects: 'netcore-unit-testing/web-api/web-api/web-api.csproj'
               arguments: '-o $(Build.ArtifactStagingDirectory)'
           - publish: '$(Build.ArtifactStagingDirectory)'
-            artifact: api
+            artifact: api3
 
 
   # - stage: Test
