@@ -17,7 +17,7 @@ pool:
   vmImage: windows-latest
 
 stages:
-  - stage: Build
+  - stage: Talk
     jobs:
       - job: Publish
         steps:
@@ -37,10 +37,9 @@ stages:
           - publish: '$(Build.ArtifactStagingDirectory)'
             artifact: api
 
-  - stage: Test
+  - stage: Demo
     jobs:
-      - job: UnitTest
-        displayName: Unit Test
+      - job: Publish
         steps:
           - checkout: dotnet-core-api
           - task: UseDotNet@2
@@ -50,78 +49,120 @@ stages:
               version: 6.0.101
               installationPath: $(Agent.ToolsDirectory)/dotnet
           - task: DotNetCoreCLI@2
-            displayName: Build Tests
+            displayName: Build dotnet-core-api
             inputs:
-              command: 'build'
-              projects: 'netcore-unit-testing/web-api/web-api-tests/web-api-tests.csproj'
+              command: 'publish'
+              projects: 'netcore-unit-testing/web-api/web-api/web-api.csproj'
+              arguments: '-o $(Build.ArtifactStagingDirectory)'
+          - publish: '$(Build.ArtifactStagingDirectory)'
+            artifact: api
+
+  - stage: Questions
+    jobs:
+      - job: Publish
+        steps:
+          - checkout: dotnet-core-api
+          - task: UseDotNet@2
+            displayName: 'Use .NET Core sdk'
+            inputs:
+              packageType: sdk
+              version: 6.0.101
+              installationPath: $(Agent.ToolsDirectory)/dotnet
           - task: DotNetCoreCLI@2
-            displayName: Test Numbers
+            displayName: Build dotnet-core-api
             inputs:
-              command: 'test'
-              projects: 'netcore-unit-testing/web-api/web-api-tests/web-api-tests.csproj'
-              arguments: '--no-restore --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory $(Common.TestResultsDirectory)'
-              # If publishTestResults is true, test results are published back to Azure Devops (same as the PublishTestResults task below)
-              publishTestResults: false
-          - task: PublishTestResults@2
-            displayName: Publish Test Results
-            inputs:
-              testResultsFormat: 'VSTest'
-              testResultsFiles: '$(Common.TestResultsDirectory)/**/*.trx'
-              testRunTitle: Numbers Unit Tests
-            # This will run the ReportGenerator to convert the code coverage xml to html
-          - task: PublishCodeCoverageResults@1
-            displayName: Publish Code Coverage Results
-            inputs:
-              codeCoverageTool: Cobertura
-              summaryFileLocation: '$(Common.TestResultsDirectory)/**/coverage.cobertura.xml'
+              command: 'publish'
+              projects: 'netcore-unit-testing/web-api/web-api/web-api.csproj'
+              arguments: '-o $(Build.ArtifactStagingDirectory)'
+          - publish: '$(Build.ArtifactStagingDirectory)'
+            artifact: api
 
-  - stage: DeployAppServiceOne
-    displayName: Deploy Environment 1
-    dependsOn: Test
-    jobs:
-        # Deployment jobs are a special kind of job that can
-        # record deployment history and deployment strategy.
-        # They do not automatically clone the source repo.
-      - deployment: DeployApi
-        displayName: Deploy app service
-        environment: env-one
-        strategy:
-          runOnce:
-            # Deploy hooks download artifacts automatically
-            deploy:
-              steps:
-              - task: AzureRmWebAppDeployment@4
-                inputs:
-                  ConnectionType: 'AzureRM'
-                  WebAppKind: 'webApp'
-                  WebAppName: 'api-app-east'
-                  ResourceGroupName: 'artifacts-rg'
-                  Package: '$(Agent.BuildDirectory)/**/*.zip'
-                  ConnectedServiceName: CodeMash2022-sp
 
-  - stage: DeployAppServiceTwo
-    displayName: Deploy Environment 2
-    dependsOn: Test
-    jobs:
-      - deployment: DeployApi
-        displayName: Deploy app service
-        environment: env-two
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                # The download keywork is a shortcut for
-                # the task DownloadPipelineArtifact.
-                # It also overrides the default behavior of
-                # downloading all pipeline artifacts.
-              - download: current
-                artifact: api
-              - task: AzureRmWebAppDeployment@4
-                inputs:
-                  ConnectionType: 'AzureRM'
-                  WebAppKind: 'webApp'
-                  WebAppName: 'api-app-east2'
-                  ResourceGroupName: 'artifacts-rg'
-                  Package: '$(Agent.BuildDirectory)/**/*.zip'
-                  ConnectedServiceName: CodeMash2022-sp
+  # - stage: Test
+  #   jobs:
+  #     - job: UnitTest
+  #       displayName: Unit Test
+  #       steps:
+  #         - checkout: dotnet-core-api
+  #         - task: UseDotNet@2
+  #           displayName: 'Use .NET Core sdk'
+  #           inputs:
+  #             packageType: sdk
+  #             version: 6.0.101
+  #             installationPath: $(Agent.ToolsDirectory)/dotnet
+  #         - task: DotNetCoreCLI@2
+  #           displayName: Build Tests
+  #           inputs:
+  #             command: 'build'
+  #             projects: 'netcore-unit-testing/web-api/web-api-tests/web-api-tests.csproj'
+  #         - task: DotNetCoreCLI@2
+  #           displayName: Test Numbers
+  #           inputs:
+  #             command: 'test'
+  #             projects: 'netcore-unit-testing/web-api/web-api-tests/web-api-tests.csproj'
+  #             arguments: '--no-restore --no-build --collect:"XPlat Code Coverage" --logger trx --results-directory $(Common.TestResultsDirectory)'
+  #             # If publishTestResults is true, test results are published back to Azure Devops (same as the PublishTestResults task below)
+  #             publishTestResults: false
+  #         - task: PublishTestResults@2
+  #           displayName: Publish Test Results
+  #           inputs:
+  #             testResultsFormat: 'VSTest'
+  #             testResultsFiles: '$(Common.TestResultsDirectory)/**/*.trx'
+  #             testRunTitle: Numbers Unit Tests
+  #           # This will run the ReportGenerator to convert the code coverage xml to html
+  #         - task: PublishCodeCoverageResults@1
+  #           displayName: Publish Code Coverage Results
+  #           inputs:
+  #             codeCoverageTool: Cobertura
+  #             summaryFileLocation: '$(Common.TestResultsDirectory)/**/coverage.cobertura.xml'
+
+  # - stage: DeployAppServiceOne
+  #   displayName: Deploy Environment 1
+  #   dependsOn: Test
+  #   jobs:
+  #       # Deployment jobs are a special kind of job that can
+  #       # record deployment history and deployment strategy.
+  #       # They do not automatically clone the source repo.
+  #     - deployment: DeployApi
+  #       displayName: Deploy app service
+  #       environment: env-one
+  #       strategy:
+  #         runOnce:
+  #           # Deploy hooks download artifacts automatically
+  #           deploy:
+  #             steps:
+  #             - task: AzureRmWebAppDeployment@4
+  #               inputs:
+  #                 ConnectionType: 'AzureRM'
+  #                 WebAppKind: 'webApp'
+  #                 WebAppName: 'api-app-east'
+  #                 ResourceGroupName: 'artifacts-rg'
+  #                 Package: '$(Agent.BuildDirectory)/**/*.zip'
+  #                 ConnectedServiceName: CodeMash2022-sp
+
+  # - stage: DeployAppServiceTwo
+  #   displayName: Deploy Environment 2
+  #   dependsOn: Test
+  #   jobs:
+  #     - deployment: DeployApi
+  #       displayName: Deploy app service
+  #       environment: env-two
+  #       strategy:
+  #         runOnce:
+  #           deploy:
+  #             steps:
+  #               # The download keywork is a shortcut for
+  #               # the task DownloadPipelineArtifact.
+  #               # It also overrides the default behavior of
+  #               # downloading all pipeline artifacts.
+  #             - download: current
+  #               artifact: api
+  #             - task: AzureRmWebAppDeployment@4
+  #               inputs:
+  #                 ConnectionType: 'AzureRM'
+  #                 WebAppKind: 'webApp'
+  #                 WebAppName: 'api-app-east2'
+  #                 ResourceGroupName: 'artifacts-rg'
+  #                 Package: '$(Agent.BuildDirectory)/**/*.zip'
+  #                 ConnectedServiceName: CodeMash2022-sp
 
