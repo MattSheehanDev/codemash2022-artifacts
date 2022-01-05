@@ -13,27 +13,24 @@ resources:
       endpoint: MattSheehanDev      # Service Connection name
       name: gothinkster/node-express-realworld-example-app
 
-variables:
-  YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
-
 pool:
   vmImage: ubuntu-latest
 
 stages:
   - stage: Yarn
-    displayName: Yarn Install
     jobs:
-      - job: Publish
+      - job: YarnInstall
+        displayName: Yarn Install
         steps:
           - checkout: nodejs-example
+          
           - task: Cache@2
+            displayName: Cache Yarn packages
             inputs:
+              path: $(Pipeline.Workspace)/.yarn
               key: '"yarn" | "$(Agent.OS)" | yarn.lock'
               restoreKeys: |
                 yarn | "$(Agent.OS)"
                 yarn
-              path: $(YARN_CACHE_FOLDER)
-            displayName: Cache Yarn packages
 
-          - script: yarn cache dir
           - script: yarn --frozen-lockfile
