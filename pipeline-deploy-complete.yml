@@ -11,14 +11,13 @@ resources:
     - repository: dotnet-core-api   # Name used during the checkout step
       type: Github
       endpoint: MattSheehanDev      # Service Connection name
-      name: Azure-Samples/dotnet-core-api
+      name: ACodeMazeBlog/unit-testing-aspnetcore-webapi
 
 pool:
   vmImage: windows-latest
 
 stages:
-  - stage: PublishApp
-    displayName: Publish App
+  - stage: Build
     jobs:
       - job: Publish
         steps:
@@ -27,20 +26,20 @@ stages:
             displayName: Build dotnet-core-api
             inputs:
               command: 'publish'
-              projects: 'TodoApi.csproj'
+              projects: 'netcore-unit-testing/web-api/web-api/web-api.csproj'
               arguments: '-o $(Build.ArtifactStagingDirectory)'
           - publish: '$(Build.ArtifactStagingDirectory)'
             artifact: api
 
   - stage: DeployAppServiceOne
-    displayName: Deploy App
+    displayName: Deploy Environment 1
     dependsOn: PublishApp
     jobs:
         # Deployment jobs are a special kind of job that can
         # record deployment history and deployment strategy.
         # They do not automatically clone the source repo.
       - deployment: DeployApi
-        displayName: Deploy dotnet-core-api
+        displayName: Deploy app service
         environment: env-one
         strategy:
           runOnce:
@@ -57,11 +56,11 @@ stages:
                   ConnectedServiceName: CodeMash2022-sp
 
   - stage: DeployAppServiceTwo
-    displayName: Deploy App
+    displayName: Deploy Environment 2
     dependsOn: PublishApp
     jobs:
       - deployment: DeployApi
-        displayName: Deploy dotnet-core-api
+        displayName: Deploy app service
         environment: env-two
         strategy:
           runOnce:
