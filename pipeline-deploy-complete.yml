@@ -42,7 +42,7 @@ stages:
       - job: UnitTest
         displayName: Unit Test
         steps:
-          - checkout: DotnetSamples
+          - checkout: dotnet-core-api
           - task: UseDotNet@2
             displayName: 'Use .NET Core sdk'
             inputs:
