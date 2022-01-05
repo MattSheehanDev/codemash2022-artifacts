@@ -19,9 +19,10 @@ pool:
 
 stages:
   - stage: BuildNumbersStage
-    displayName: Build Dotnet Sample (Numbers)
+    displayName: Build
     jobs:
       - job: BuildNumbers
+        displayName: Build Numbers Project
         steps:
           - checkout: DotnetSamples
           - task: DotNetCoreCLI@2
@@ -48,9 +49,10 @@ stages:
               artifactName: numbers
 
   - stage: TestNumbersStage
-    displayName: Test Dotnet Sample (Numbers)
+    displayName: Test
     jobs:
       - job: TestNumbers
+        displayName: Test Numbers Project
         steps:
           - checkout: DotnetSamples
           - task: DotNetCoreCLI@2
@@ -84,6 +86,7 @@ stages:
     dependsOn: TestNumbersStage
     jobs:
       - job: PublishNumbers
+        displayName: Publish Nuget Package
         steps:
           - checkout: none
             # Download numbers artifact from the current pipeline run
@@ -111,6 +114,7 @@ stages:
     dependsOn: TestNumbersStage
     jobs:
       - job: PublishNumbers
+        displayName: Publish Nuget Package
         steps:
           - checkout: none
             # Download numbers artifact from the current pipeline run
