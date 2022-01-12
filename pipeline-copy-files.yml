@@ -46,7 +46,8 @@ stages:
         displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)'
-          Contents: '**/bin/*.exe'
+          Contents: |
+            **/bin/*.exe
           TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
       - publish: '$(Build.ArtifactStagingDirectory)'
