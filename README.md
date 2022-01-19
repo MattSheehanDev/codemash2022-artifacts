@@ -1,4 +1,6 @@
-# CodeMash 2022 - Making the most of your DevOps Artifacts
+# Making the most of your DevOps Artifacts
+
+This repo contains slides and resources for the talk _Making the most of your DevOps Artifacts_ given at CodeMash 2022.
 
 ## Abstract
 With greater emphasis placed on automating the creation of predictable software bundles, you may be asking what are DevOps artifacts and what can you do with them? Well, it turns out you can do many things with them. Artifacts can be the compiled output for your app deployment, or a Nuget or NPM package ready to be pushed to a private (or public) registry; sometimes they can just be a place for temporary storage before becoming the input of another job in the pipeline.
